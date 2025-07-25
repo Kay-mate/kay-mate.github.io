@@ -24,7 +24,7 @@ function App() {
       <div>
         <h1>Countdown Timer</h1>
         <p>{formatTime(seconds)}</p>
-        {seconds <= 0 && <p>Time's Up!</p>}
+        {seconds <= 0 && <p>timeup</p>}
       </div>
     </section>
   )
