@@ -1,11 +1,14 @@
 import { useState, useEffect, useRef } from 'react'
+import U from './TimerLogs'
 
 function App() {
   const [seconds, setSeconds] = useState(0)
   const [inputSeconds, setInputSeconds] = useState('0')
   const [initialSeconds, setInitialSeconds] = useState(0)
+  const [showYT, setShowYT] = useState(false)
   const circleRef = useRef(null)
   const audioRef = useRef(null)
+  const gradientId = 'progress-gradient'
 
   useEffect(() => {
     if (seconds <= 0) return
@@ -43,11 +46,19 @@ function App() {
 
   const handleSetTime = () => {
     const num = Number(inputSeconds)
-    if (num >= 1 && num <= 30) {
+    if (num >= 1 && num <= 999) {
       setInitialSeconds(num)
       setSeconds(num)
+      setShowYT(num === 69)
     } else {
       setInputSeconds(seconds.toString())
+    }
+  }
+
+  const handleReset = () => {
+    const num = Number(inputSeconds)
+    if (num >= 1 && num <= 999) {
+      setSeconds(num)
     }
   }
 
@@ -68,31 +79,41 @@ function App() {
     alignItems: 'center',
     pointerEvents: 'none',
     userSelect: 'none',
-    color: 'black',
+    color: '#d8b4fe',
     fontSize: '3rem',
     fontFamily: 'monospace',
   }
 
-  return (
-    <section id="buzzer-root" className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white p-6">
-      <h1 className="text-3xl font-bold mb-6">Countdown Timer</h1>
-      <div className="flex items-center space-x-8">
+  const radius = 60
+  const circumference = 2 * Math.PI * radius
+
+  return <section id="buzzer-root">
+    <div id="main-wrapper">
+      <h1 id="title">Countdown Timer</h1>
+      <div id="controls-wrapper">
         <div style={containerStyle}>
           <svg width="140" height="140" viewBox="0 0 140 140" style={{ transform: 'rotate(-90deg)' }}>
-            <circle cx="70" cy="70" r="60" stroke="#444" strokeWidth="10" fill="none" />
-            <circle ref={circleRef} cx="70" cy="70" r="60" stroke="#3b82f6" strokeWidth="10" fill="none" strokeDasharray={2 * Math.PI * 60} strokeDashoffset={2 * Math.PI * 60} style={{ transition: 'stroke-dashoffset 1s linear' }} />
+            <defs>
+              <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="60%" stopColor="#8839ef" />
+                <stop offset="100%" stopColor="#ea76cb" />
+              </linearGradient>
+            </defs>
+            <circle cx="70" cy="70" r={radius} stroke="#4b2da8" strokeWidth="10" fill="none" />
+            <circle ref={circleRef} cx="70" cy="70" r={radius} stroke={`url(#${gradientId})`} strokeWidth="10" fill="none" strokeDasharray={circumference} strokeDashoffset={circumference} id="progress-circle" style={{ transition: 'stroke-dashoffset 1s linear' }} />
           </svg>
           <div style={textContainerStyle}>{seconds}</div>
         </div>
-        <div className="flex flex-col space-y-4">
-          {seconds <= 0 && <p className="text-red-500 font-semibold text-center">timeup</p>}
-          <input type="text" inputMode="numeric" value={inputSeconds} onChange={handleInputChange} placeholder="1 - 30 seconds" className="w-32 p-2 rounded border border-gray-600 bg-gray-800 text-white text-center focus:outline-none focus:ring-2 focus:ring-blue-500" maxLength={2} />
-          <button onClick={handleSetTime} className="px-4 py-2 bg-blue-600 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">Set Time</button>
+        <div id="input-wrapper">
+          <input type="text" inputMode="numeric" value={inputSeconds} onChange={handleInputChange} placeholder="1 - 30 seconds" maxLength={3} id="time-input" />
+          <button onClick={handleSetTime} id="set-button">Set Time</button>
+          <button onClick={handleReset} id="set-button">Reset</button>
         </div>
       </div>
-      <audio ref={audioRef} src="/tuturu.mp3" preload="auto" />
-    </section>
-  )
+    </div>
+    {showYT && <U />}
+    <audio ref={audioRef} src="/tuturu.mp3" preload="auto" />
+  </section>
 }
 
 export default App
