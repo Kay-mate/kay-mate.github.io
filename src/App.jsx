@@ -22,6 +22,20 @@ function App() {
   }, [seconds])
 
   useEffect(() => {
+    if (seconds === 0 && audioRef.current) {
+      const timeout = setTimeout(() => {
+        audioRef.current.currentTime = 0
+        audioRef.current.play()
+        setTimeout(() => {
+          audioRef.current.pause()
+          audioRef.current.currentTime = 0
+        }, 3000)
+      }, 1000)
+      return () => clearTimeout(timeout)
+    }
+  }, [seconds])
+
+  useEffect(() => {
     if (!circleRef.current) return
     const radius = 60
     const circumference = 2 * Math.PI * radius
@@ -29,15 +43,6 @@ function App() {
     const offset = circumference - progress * circumference
     circleRef.current.style.strokeDashoffset = offset
   }, [seconds, initialSeconds])
-
-  useEffect(() => {
-    if (seconds === 0 && audioRef.current) {
-      const timeout = setTimeout(() => {
-        audioRef.current.play()
-      }, 1000)
-      return () => clearTimeout(timeout)
-    }
-  }, [seconds])
 
   const handleInputChange = (e) => {
     const val = e.target.value
@@ -100,19 +105,39 @@ function App() {
               </linearGradient>
             </defs>
             <circle cx="70" cy="70" r={radius} stroke="#4b2da8" strokeWidth="10" fill="none" />
-            <circle ref={circleRef} cx="70" cy="70" r={radius} stroke={`url(#${gradientId})`} strokeWidth="10" fill="none" strokeDasharray={circumference} strokeDashoffset={circumference} id="progress-circle" style={{ transition: 'stroke-dashoffset 1s linear' }} />
+            <circle
+              ref={circleRef}
+              cx="70"
+              cy="70"
+              r={radius}
+              stroke={`url(#${gradientId})`}
+              strokeWidth="10"
+              fill="none"
+              strokeDasharray={circumference}
+              strokeDashoffset={circumference}
+              id="progress-circle"
+              style={{ transition: 'stroke-dashoffset 1s linear' }}
+            />
           </svg>
           <div style={textContainerStyle}>{seconds}</div>
         </div>
         <div id="input-wrapper">
-          <input type="text" inputMode="numeric" value={inputSeconds} onChange={handleInputChange} placeholder="1 - 30 seconds" maxLength={3} id="time-input" />
+          <input
+            type="text"
+            inputMode="numeric"
+            value={inputSeconds}
+            onChange={handleInputChange}
+            placeholder="1 - 30 seconds"
+            maxLength={3}
+            id="time-input"
+          />
           <button onClick={handleSetTime} id="set-button">Set Time</button>
           <button onClick={handleReset} id="set-button">Reset</button>
         </div>
       </div>
     </div>
     {showYT && <U />}
-    <audio ref={audioRef} src="/tuturu.mp3" preload="auto" />
+    <audio ref={audioRef} src="/buzzer.wav" preload="auto" />
   </section>
 }
 
